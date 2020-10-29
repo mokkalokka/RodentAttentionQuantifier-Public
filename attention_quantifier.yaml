@@ -1,0 +1,18 @@
+name: attention_quantifier
+
+dependencies:
+  - python=3.7
+  - pip
+  - pandas
+  - numpy
+  - nb_conda
+  - tensorflow==1.13.1
+  - wxpython
+  - Shapely
+  - pip:
+      - imutils
+      - alive_progress
+      - opencv-python
+      - tqdm
+      - deeplabcut==2.2b8
+      - h5py
