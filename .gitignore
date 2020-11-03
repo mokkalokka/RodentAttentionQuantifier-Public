@@ -105,3 +105,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+__pycache__/
+data/evaluation-results/iteration-0/multi_2Oct19-trainset95shuffle1/LabeledImages_DLC_resnet50_multi_2Oct19shuffle1_200000_snapshot-200000/
+data/evaluation-results/iteration-0/multi_2Oct19-trainset95shuffle1/maps/

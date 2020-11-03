@@ -5,11 +5,11 @@ from tkinter import *
 from tkinter import filedialog
 
 
-def plot_angle_on_video(list_of_rows):
+def plot_angle_on_video(video_path, from_point, end_point_1, end_point_2, angles):
     root = Tk()
     root.withdraw()
     root.update()
-    video_path = filedialog.askopenfilename(initialdir=sys.path[0], title='Select video to plot on')
+    # video_path = filedialog.askopenfilename(initialdir=sys.path[0], title='Select video to plot on')
     root.destroy()
 
     #video_output = filedialog.asksaveasfilename(initialdir=sys.path[0], title='Save plotted video as..')
@@ -25,7 +25,7 @@ def plot_angle_on_video(list_of_rows):
     height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
     # Setting the video output writer
-    out = cv2.VideoWriter(video_output, cv2.VideoWriter_fourcc(*'mp4v'), fps, (width, height))
+    out = cv2.VideoWriter(video_output, cv2.VideoWriter_fourcc(*'mp4v'), fps, (width, height)) # fps = 10 / 25
     # Green color in BGR
     color = (0, 255, 0)
 
@@ -33,25 +33,31 @@ def plot_angle_on_video(list_of_rows):
 
     # Line thickness of 9 px
     thickness = 1
-    for i in trange(total_frames):
+
+
+    print('from point: ',len(from_point))
+    print('total frames: ', total_frames)
+
+    for i in trange(total_frames - 1):
         (grabbed, frame) = video.read()
 
         if not grabbed:
             break
 
-        # if not np.isnan(sum(list_of_rows[i].values())):
-        if not np.isnan(sum(list(list_of_rows[i].values())[:4])):
+        if not (np.isnan(sum(list(from_point[i].values()))) or np.isnan(sum(list(end_point_1[i].values())))):
+        #if not np.isnan(sum(list(zip(from_point[i], end_point_2[i]).values()))):
 
-            start_point = (int(list_of_rows[i]['o_centroid_x']), -int(list_of_rows[i]['o_centroid_y']))
-            end_point = (int(list_of_rows[i]['o_snout_x']), -int(list_of_rows[i]['o_snout_y']))
-            end_point = (start_point[0] + (end_point[0] - start_point[0]) * 5, start_point[1] + (end_point[1] - start_point[1]) * 5)
+            start_point = (int(from_point[i]['x']), int(from_point[i]['y']))
+            end_point = (int(end_point_1[i]['x']), int(end_point_1[i]['y']))
+            end_point = lengthen_line(start_point, end_point, multiplier=8)
             frame = cv2.line(frame, start_point, end_point, color, thickness)
 
-            if not np.isnan(sum(list(list_of_rows[i].values())[4:])):
-                start_point = (int(list_of_rows[i]['o_centroid_x']), -int(list_of_rows[i]['o_centroid_y']))
-                end_point = (int(list_of_rows[i]['t_centroid_x']), -int(list_of_rows[i]['t_centroid_y']))
-                frame = cv2.line(frame, start_point, end_point, color, thickness)
-        txt = f"Angle: {round(list_of_rows[i]['angle'], 2)}"
+        if not (np.isnan(sum(list(from_point[i].values()))) or np.isnan(sum(list(end_point_2[i].values())))):
+            start_point = (int(from_point[i]['x']), int(from_point[i]['y']))
+            end_point = (int(end_point_2[i]['x']), int(end_point_2[i]['y']))
+            frame = cv2.line(frame, start_point, end_point, color, thickness)
+
+        txt = f"Angle: {round(angles[i], 2)}"
         frame = cv2.putText(frame, txt, (10, height - 40), font, 0.5, (0, 255, 0), 2, cv2.LINE_AA)
         txt = f"Frame: {i}"
         frame = cv2.putText(frame, txt, (10, height - 10), font, 0.5, (0, 255, 0), 2, cv2.LINE_AA)
@@ -60,3 +66,9 @@ def plot_angle_on_video(list_of_rows):
 
     out.release()
     video.release()
+
+
+def lengthen_line(start_point, end_point, multiplier):
+    end_point = (start_point[0] + (end_point[0] - start_point[0]) * multiplier,
+                 start_point[1] + (end_point[1] - start_point[1]) * multiplier)
+    return end_point
