@@ -1,16 +1,15 @@
 import cv2
 from tqdm import trange
 import numpy as np
-from tkinter import *
-from tkinter import filedialog
 
 
 def plot_angle_on_video(video_path, from_point, end_point_1, end_point_2, angles):
-    root = Tk()
-    root.withdraw()
-    root.update()
+    # root = Tk()
+    # root.withdraw()
+    # root.update()
     # video_path = filedialog.askopenfilename(initialdir=sys.path[0], title='Select video to plot on')
-    root.destroy()
+    # root.destroy()
+    print('inside video plotter!')
 
     #video_output = filedialog.asksaveasfilename(initialdir=sys.path[0], title='Save plotted video as..')
     video_output = video_path.split('.')[0] + '_with_lines_and_angles.mp4'
@@ -38,7 +37,7 @@ def plot_angle_on_video(video_path, from_point, end_point_1, end_point_2, angles
     print('from point: ',len(from_point))
     print('total frames: ', total_frames)
 
-    for i in trange(total_frames - 1):
+    for i in trange(len(from_point), ncols=70, unit='frames'):
         (grabbed, frame) = video.read()
 
         if not grabbed:
