@@ -15,10 +15,10 @@ See attention_quantifier.yaml
 conda activate attention_quantifier
 
 for windows:
-ipython attention_qantifier.py
+ipython GUI.py
 
 for mac:
-pythonw attention_quantifier.py
+pythonw GUI.py
 
 ## Important:
 Current beta version only supports CPU processing (slow).   
@@ -27,6 +27,7 @@ keep data inside the data folder!
 ## Pipeline:
 * Select video to process ->
 * crop (GUI) ->
+* confine observer (GUI)
 * frames with light will be extracted as well as normalized, grayscale filtered and compressed ->
 * analysis of video with multi animal deeplabcut (beta) ->
 * create tracklets (points) ->
