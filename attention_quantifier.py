@@ -1,21 +1,11 @@
-import threading
 import time
-from tkinter import *
-from tkinter import filedialog
-
-from crop_and_confine import crop_and_confine
 from log_to_file import log_to_file
 from plot_angle_on_video import plot_angle_on_video
 from process_angle import get_angles, calculate_score
 from read_tracklets import read_tracklets
 from ma_dlc_controller import analyze_videos
 from video_preprocessing import video_preprocess
-import os
 
-
-# TODO Create GUI for this section
-
-# os.chdir('data')
 
 def start_pipeline(video_paths, crop_ratio, max_y_observer, options, gui_handler):
     number_of_points = 0

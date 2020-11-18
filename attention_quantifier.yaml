@@ -4,15 +4,16 @@ dependencies:
   - python=3.7
   - pip
   - pandas
-  - numpy
   - nb_conda
   - tensorflow==1.13.1
   - wxpython
   - Shapely
   - pip:
       - imutils
-      - alive_progress
       - opencv-python
+      - opencv-contrib-python
       - tqdm
       - deeplabcut==2.2b8
       - h5py
+      - numpy==1.16.4
+

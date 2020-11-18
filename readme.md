@@ -7,6 +7,7 @@ See attention_quantifier.yaml
 
 
 ## Installation:
+* Install miniconda 64-bit version
 * Change directory to project root
 * conda env create --file attention_quantifier.yaml
 

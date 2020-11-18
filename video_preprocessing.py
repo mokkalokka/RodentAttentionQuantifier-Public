@@ -1,23 +1,6 @@
-import threading
-
 import numpy as np
 import imutils
 import cv2
-# import pandas as pd
-# import time
-from alive_progress import alive_bar
-from tkinter import *
-# from tkinter import filedialog
-import matplotlib.pyplot as plt
-
-
-# ap = argparse.ArgumentParser()
-# ap.add_argument("-i", "--input", required=True, help="-inn (input video)")
-# ap.add_argument("-o", "--output", required=True, help="-output (output video)")
-#
-# args = vars(ap.parse_args())
-# video_path = args['input']
-# video_output = args['output']
 from tqdm import trange
 import tqdm
 
@@ -174,10 +157,4 @@ def get_frame_count(video_path):
     return count
     # When everything done, release the capture
 
-# def plot_posistion(ball_location):
-#     df = pd.DataFrame(ball_location)
-#     # print(df)
-#     plt.scatter(df['x'], df['y'])
-#     # plt.legend(['observer', 'performer'])
-#     plt.title('Position of ball with light')
-#     plt.show()
+

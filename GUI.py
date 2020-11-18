@@ -1,7 +1,4 @@
-import io
-import platform
 import threading
-import time
 from tkinter import Tk, Text, BOTH, W, N, E, S, StringVar, filedialog, HORIZONTAL, LEFT, RIGHT, IntVar, Checkbutton, \
     Menu
 from tkinter.ttk import Frame, Button, Label, Style, Progressbar
@@ -34,6 +31,7 @@ class Example(Frame):
         self.thread = None
         # self.task_title = None
         self.results = None
+        # self.stderr = None
         # Checkbox options
         # self.plot = IntVar()
 
@@ -65,7 +63,7 @@ class Example(Frame):
         self.update_console(f'\nNumber of files: {len(self.video_input_paths)}')
         self.thread = None
         self.results = None
-        self.run_stdout_capture(False)
+        # self.run_stdout_capture(False)
 
     def start_analysis(self):
         if self.video_input_paths == '':
@@ -80,35 +78,17 @@ class Example(Frame):
                 max_y_observer.append(new_max_y_observer)
 
             self.run_stdout_capture(True)
-            # self.progress.start()
-            # video_path, crop_ratio, max_y_observer, gui_handler
-
-            # ctx = multiprocessing.get_context('spawn')
-            # if __name__ == '__main__':
-            #     if platform.system() == "Darwin":
-            #         multiprocessing.set_start_method('spawn')
 
             options = {'plot': self.plot_video.get(),
                        'only_light': self.only_light.get(),
                        'log': self.log.get(),
                        'accumulate': self.accumulate.get()}
 
-            # multiprocessing.set_start_method('spawn')
-            # self.process = multiprocessing.Process(
-            #     target=start_pipeline, args=[self.video_input_path, crop_ratio,
-            #                                  max_y_observer, options, self])
-            # self.process.start()
-            # self.update_console(f'Options: \nPlotting video: {self.plot_video.get()}\nOnly extracting frames with light:')
-            # print(f'plotting video: {plot_video}')
-            # plot_video = True
             self.disable_buttons()
             self.thread = threading.Thread(target=start_pipeline,
                                            args=[self.video_input_paths, crop_ratio,
                                                  max_y_observer, options, self])
             self.thread.start()
-
-            # self.progress.stop()
-            # self.run_stdout_capture(False)
 
     def plot_identity_location(self):
         plot = []
