@@ -1,4 +1,6 @@
 import time
+
+from file_handler import move_files_to_dir, delete_analysis_temp_files
 from log_to_file import log_to_file
 from plot_angle_on_video import plot_angle_on_video
 from process_angle import get_angles, calculate_score
@@ -9,11 +11,14 @@ from video_preprocessing import video_preprocess
 
 def start_pipeline(video_paths, crop_ratio, max_y_observer, options, gui_handler):
     number_of_points = 0
+    number_of_videos = len(video_paths)
     angles = []
     counter = 0
     observer = []
     performer = []
     result_txt = []
+
+
 
     # x.join()
     # gui_handler.update_console('\nCropping and confining .. ')
@@ -29,13 +34,13 @@ def start_pipeline(video_paths, crop_ratio, max_y_observer, options, gui_handler
     # max_y_observer= 0
     for video_path in video_paths:
 
-        gui_handler.set_progress(10)
+        gui_handler.set_progress(1/number_of_videos * 10)
         # Pre-processing video and get coordinates for ball with light
         gui_handler.update_console('\nStarting video preprocessing .. ')
         ball_location, preprocessed_video_path = video_preprocess(video_path,
                                                                   crop_ratio[counter],
                                                                   gui_handler,
-                                                                  extract_pushed_balls=options['only_light'])
+                                                                  options)
         gui_handler.update_console('Done! ')
         # gui_handler.set_progress(40)
 
@@ -66,22 +71,35 @@ def start_pipeline(video_paths, crop_ratio, max_y_observer, options, gui_handler
         gui_handler.update_console('\nGetting the angles ...')
         # Calculate the angles between the two vectors [from_point, end_point_1] and [from_point, end_point_2]
         # gui_handler.run_stdout_capture(True)
-        angles = get_angles(from_point=observer[-1].eyes,
-                            end_point_1=observer[-1].snout,
-                            end_point_2=ball_location,
-                            angles=angles)
+        if options['focus'] == 'Ball with light':
+            angles = get_angles(from_point=observer[-1].eyes,
+                                end_point_1=observer[-1].snout,
+                                end_point_2=ball_location,
+                                angles=angles)
+        else:
+            angles = get_angles(from_point=observer[-1].eyes,
+                                end_point_1=observer[-1].snout,
+                                end_point_2=performer[-1].eyes,
+                                angles=angles)
         from_index = number_of_points
         number_of_points = len(angles)
         to_index = number_of_points
         results = calculate_score(angles, from_index, to_index)
 
         filename = video_path.split('/')[-1]
-        result_txt.append(f'\nAttention results for {filename}:\n' +
+
+        mode = options['mode']
+        focus = options['focus']
+        result_txt.append(f'\nAttention results for {filename}:' +
+                          f'\nMode: {mode}' +
+                          f'\nFocus: {focus} \n' +
                           f'\nTotal average angle: {results[0]}' +
                           f'\nbinocular40 score: {results[1]}' +
                           f'\nbinocular110 score: {results[2]}' +
                           f'\nbinocular176 score: {results[3]}' +
-                          f'\nNumber of uncalculated angles: {results[4]}/ {to_index - from_index}\n')
+                          f'\nNumber of uncalculated angles: {results[4]}/ {to_index - from_index}' +
+                          f'\nPercentage of uncalculated angles: {(results[4] / (to_index - from_index)) * 100 }\n')
+
 
         gui_handler.update_console(result_txt[-1], True)
 
@@ -91,11 +109,24 @@ def start_pipeline(video_paths, crop_ratio, max_y_observer, options, gui_handler
 
         if options['plot']:
             gui_handler.update_console('\nPlotting lines and angles on video')
-            plot_angle_on_video(preprocessed_video_path,
-                                from_point=observer[-1].eyes,
-                                end_point_1=observer[-1].snout,
-                                end_point_2=ball_location,
-                                angles=angles[from_index:to_index])
+            if options['focus'] == 'Ball with light':
+                plot_angle_on_video(preprocessed_video_path,
+                                    options,
+                                    from_point=observer[-1].eyes,
+                                    end_point_1=observer[-1].snout,
+                                    end_point_2=ball_location,
+                                    angles=angles[from_index:to_index])
+            else:
+                plot_angle_on_video(preprocessed_video_path,
+                                    options,
+                                    from_point=observer[-1].eyes,
+                                    end_point_1=observer[-1].snout,
+                                    end_point_2=performer[-1].eyes,
+                                    angles=angles[from_index:to_index])
+            move_files_to_dir(preprocessed_video_path)
+
+        delete_analysis_temp_files(preprocessed_video_path)
+
 
         counter += 1
 
@@ -108,7 +139,8 @@ def start_pipeline(video_paths, crop_ratio, max_y_observer, options, gui_handler
                           f'\nbinocular40 score: {results[1]}' +
                           f'\nbinocular110 score: {results[2]}' +
                           f'\nbinocular176 score: {results[3]}' +
-                          f'\nNumber of uncalculated angles: {results[4]} / {number_of_points}\n')
+                          f'\nNumber of uncalculated angles: {results[4]} / {number_of_points}' +
+                          f'\nNumber of uncalculated angles: {(results[4] / number_of_points) * 100}\n')
 
         gui_handler.update_console('All results:\n', True)
         for res in result_txt:

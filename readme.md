@@ -1,18 +1,22 @@
 # Rodent attention quantifier for analysis of rodent behaviour. 
-* Early beta testing (not stable!)
 * Currently only tested with rats
 
 ## Depentencies:
-See attention_quantifier.yaml
+See RAQ-CPU.yaml (for cpu) or RAQ-GPU.yaml (for gpu)
 
 
-## Installation:
+## Installation for CPU only:
 * Install miniconda 64-bit version
 * Change directory to project root
-* conda env create --file attention_quantifier.yaml
+* conda env create -f RAQ-CPU.yaml
+
+## Installation for GPU (requires CUDA compatible GPU):
+* Install miniconda 64-bit version
+* Change directory to project root
+* conda env create -f RAQ-GPU.yaml 
 
 ## Run program:
-conda activate attention_quantifier
+conda activate RAQ-CPU or RAQ-GPU
 
 for windows:
 ipython GUI.py
@@ -25,7 +29,9 @@ Current beta version only supports CPU processing (slow).
 keep data inside the data folder!
 
 ## Pipeline:
-* Select video to process ->
+* Select video(s) to process ->
+* Select analysis options ->
+* Start analysis ->
 * crop (GUI) ->
 * confine observer (GUI)
 * frames with light will be extracted as well as normalized, grayscale filtered and compressed ->
@@ -33,6 +39,6 @@ keep data inside the data folder!
 * create tracklets (points) ->
 * read trackelts -> 
 * fix identities -> 
-* calculate angle from "observer" to "performer" ->
+* calculate angle from chose point to chosen point ->
 * plot angles and vectors used to calculate angles on top of video ->
 * pipeline done!

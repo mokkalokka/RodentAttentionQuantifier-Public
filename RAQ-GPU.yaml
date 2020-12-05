@@ -1,11 +1,15 @@
-name: attention_quantifier
+# install: conda env create -f RAQ-GPU.yaml
+# update:  conda env update -f RAQ-GPU.yaml
+
+name: RAQ-CPU
 
 dependencies:
   - python=3.7
   - pip
   - pandas
   - nb_conda
-  - tensorflow==1.13.1
+  - tensorflow-gpu==1.13.1
+  - cudnn=7
   - wxpython
   - Shapely
   - pip:
@@ -16,4 +20,3 @@ dependencies:
       - deeplabcut==2.2b8
       - h5py
       - numpy==1.16.4
-

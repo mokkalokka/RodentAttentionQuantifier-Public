@@ -4,6 +4,7 @@ from tkinter import *
 from tkinter import filedialog
 from tqdm import trange
 from rodent import Rodent
+import numpy as np
 
 pd.options.mode.chained_assignment = None
 
@@ -23,8 +24,8 @@ def fix_identities(observer, performer, y_max):
                 xor_set = set(observer_misidentified) ^ set(performer_misidentified)
                 # print(xor_set)
                 for name in xor_set:
-                    observer_tmp_points[name] = {'x': -5, 'y': 0}
-                    performer_tmp_points[name] = {'x': -5, 'y': 0}
+                    observer_tmp_points[name] = {'x': np.nan, 'y': np.nan}
+                    performer_tmp_points[name] = {'x': np.nan, 'y': np.nan}
 
             for name in observer_misidentified:
                 tmp_point = observer_tmp_points[name]
@@ -66,7 +67,7 @@ def read_tracklets(scorername, preprocessed_video_path, y_max, gui_handler):
     #                                              filetypes=[("Hierarchical Data Format (HDF)", "*.h5")]
     #                                              )
 
-    hdf_points_path = preprocessed_video_path.split('.')[0] + scorername + '_bx.h5'
+    hdf_points_path = preprocessed_video_path.split('.')[0] + scorername + '_bx_filtered.h5'
     df = pd.read_hdf(hdf_points_path)
     df = df[scorername]
     # df = df['DLC_resnet50_multi_2Oct19shuffle1_200000']

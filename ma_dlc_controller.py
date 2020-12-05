@@ -3,15 +3,22 @@ from deeplabcut.utils import auxiliaryfunctions
 import threading
 import sys
 import os
+import sys
+
 os.environ["DLClight"] = "False"
 
 
 def analyze_videos(path_config_file, videofile_path, shuffle=1, videotype='mp4', manual_refinement=False):
+
+
+
     scorername = deeplabcut.analyze_videos(path_config_file,
                                            videofile_path,
                                            shuffle=shuffle,
                                            videotype=videotype,
-                                           c_engine=False)
+                                           c_engine=False,
+                                           dynamic=(True, .5, 10) # <- Research
+                                           )
 
     scorername_path = 'data/' + scorername
 
@@ -25,9 +32,8 @@ def analyze_videos(path_config_file, videofile_path, shuffle=1, videotype='mp4',
     # h5_path = videofile_path.split('.')[0] + scorername + '_bx.h5'
     # filtered_h5_path = videofile_path.split('.')[0] + scorername + '_bx_filtered.h5'
 
-    deeplabcut.convert_raw_tracks_to_h5(path_config_file, pickle_path, min_tracklet_len=2, max_gap=0)
+    deeplabcut.convert_raw_tracks_to_h5(path_config_file, pickle_path, min_tracklet_len=1, max_gap=2)
     deeplabcut.filterpredictions(path_config_file, [videofile_path], track_method='box')
-
 
     if manual_refinement:
         os.system(
@@ -35,19 +41,10 @@ def analyze_videos(path_config_file, videofile_path, shuffle=1, videotype='mp4',
             f'\'{pickle_path}\', \'{videofile_path}\', max_gap=2)"')
 
 
-    # TODO This does not work but should be fixed!
-    # import os
-    # deeplabcut.refine_tracklets(
-    #     path_config_file,
-    #     h5_path,
-    #     videofile_path,
-    #     max_gap=0,
-    # )
-
-
 
 
     return scorername
+
 
 
 # def refine_tracklets(path_config_file, h5_path, videofile_path):

@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import filedialog
 import pandas as pd
+import numpy as np
 
 
 class Rodent:
@@ -29,14 +30,16 @@ class Rodent:
         df.drop('likelihood', inplace=True, axis=1)
         self.tail_base = df.to_dict('records')
 
-        self.eyes = calculate_centroid([self.snout, self.left_ear, self.right_ear])
+        self.eyes = calculate_centroid([self.snout, self.left_ear, self.right_ear], ignore_nans=False)
 
         self.center_of_points = calculate_centroid([self.snout,
                                                     self.left_ear,
                                                     self.right_ear,
                                                     self.upper_spine,
                                                     self.lower_spine,
-                                                    self.tail_base])
+                                                    self.tail_base],
+                                                   ignore_nans=True)
+
 
         self.number_of_frames = len(self.snout)
 
@@ -61,7 +64,7 @@ class Rodent:
         self.center_of_points[frame] = points['center_of_points']
 
 
-def calculate_centroid(list_of_points):
+def calculate_centroid(list_of_points, ignore_nans):
     centroid = []
     number_of_points = len(list_of_points)
     number_of_frames = len(list_of_points[0])
@@ -69,10 +72,26 @@ def calculate_centroid(list_of_points):
     for i in range(number_of_frames):
         x_avg = 0
         y_avg = 0
+        number_of_nans_x = 0
+        number_of_nans_y = 0
+
+        if ignore_nans:
+
+            for n in range(number_of_points):
+                if np.isnan(list_of_points[n][i]['x']):
+                    number_of_nans_x += 1
+                if np.isnan(list_of_points[n][i]['y']):
+                    number_of_nans_y += 1
 
         for n in range(number_of_points):
-            x_avg += list_of_points[n][i]['x'] / number_of_points
-            y_avg += list_of_points[n][i]['y'] / number_of_points
+            if number_of_nans_x == number_of_points:
+                x_avg = np.nan
+            else:
+                x_avg += list_of_points[n][i]['x'] / (number_of_points - number_of_nans_x)
+            if number_of_nans_y == number_of_points:
+                y_avg = np.nan
+            else:
+                y_avg += list_of_points[n][i]['y'] / (number_of_points - number_of_nans_y)
 
         centroid.append({'x': x_avg, 'y': y_avg})
 

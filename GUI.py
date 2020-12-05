@@ -1,7 +1,8 @@
 import threading
 from tkinter import Tk, Text, BOTH, W, N, E, S, StringVar, filedialog, HORIZONTAL, LEFT, RIGHT, IntVar, Checkbutton, \
-    Menu
-from tkinter.ttk import Frame, Button, Label, Style, Progressbar
+    Menu, OptionMenu, DISABLED, NORMAL
+from tkinter.scrolledtext import ScrolledText
+from tkinter.ttk import Frame, Button, Label, Style, Progressbar, Scrollbar, Combobox
 import sys
 from tqdm import trange
 from io import StringIO  # Python 3
@@ -36,12 +37,16 @@ class Example(Frame):
         # self.plot = IntVar()
 
     def update_console(self, txt='', clear=False):
+        fully_scrolled_down = self.console.yview()[1] == 1.0
         txt = '\n' + txt
         self.console.configure(state='normal')
         if clear:
             self.console.delete('1.0', 'end')
         self.console.insert('end', txt)
         self.console.configure(state='disabled')
+        # Only scroll down automatically if the user has not scrolled up manually
+        if fully_scrolled_down:
+            self.console.see("end")
 
     def update_progress_console(self, txt='', clear=False):
         self.progress_console.configure(state='normal')
@@ -68,6 +73,10 @@ class Example(Frame):
     def start_analysis(self):
         if self.video_input_paths == '':
             self.update_console('Please select a video before analysis', clear=True)
+        elif self.mode_combo.current() == -1:
+            self.update_console('Please select a extraction mode before analysis', clear=True)
+        elif self.focus_combo.current() == -1:
+            self.update_console('Please select a focus point before analysis', clear=True)
         else:
             crop_ratio = []
             max_y_observer = []
@@ -79,10 +88,14 @@ class Example(Frame):
 
             self.run_stdout_capture(True)
 
-            options = {'plot': self.plot_video.get(),
-                       'only_light': self.only_light.get(),
-                       'log': self.log.get(),
-                       'accumulate': self.accumulate.get()}
+            options = {
+                'mode': self.mode_selected.get(),
+                'focus': self.focus_mode_selected.get(),
+                'plot': self.plot_video.get(),
+                'log': self.log.get(),
+                'accumulate': self.accumulate.get()}
+
+            print(options)
 
             self.disable_buttons()
             self.thread = threading.Thread(target=start_pipeline,
@@ -140,12 +153,22 @@ class Example(Frame):
     def disable_buttons(self):
         self.load_btn["state"] = "disabled"
         self.anlysis_btn["state"] = "disabled"
+        self.mode_combo["state"] = "disabled"
+        self.focus_combo["state"] = "disabled"
+        self.plot_check["state"] = "disabled"
+        self.accumulate_check["state"] = "disabled"
+        self.log_check["state"] = "disabled"
 
     def enable_buttons(self):
         self.load_btn["state"] = "enabled"
         self.anlysis_btn["state"] = "enabled"
-        self.log_btn["state"] = "enabled"
-        self.create_video_btn["state"] = "enabled"
+        self.plot_btn["state"] = "enabled"
+        self.mode_combo["state"] = "enabled"
+        self.focus_combo["state"] = "enabled"
+        self.plot_check["state"] = "normal"
+        self.accumulate_check["state"] = "normal"
+        self.log_check["state"] = "normal"
+
 
     def run_stdout_capture(self, run):
         if run:
@@ -193,41 +216,49 @@ class Example(Frame):
         self.progress['value'] = int(progress)
         self.update()
 
+    def get_focus_options(self, *args):
+        # print('changing focus')
+        # print(f'focus option: {self.focus_combo.current()}')
+        focus_options = ['Performer (Head)']
+
+        if not (self.mode_selected.get() == 'All frames'):
+            # print(self.mode_combo.current())
+            focus_options.append('Ball with light')
+
+        elif not (self.focus_combo.current() == -1):
+            self.focus_combo.current(0)
+        self.focus_combo['values'] = focus_options
+
     def initUI(self):
         self.master.title("Rodent Attention Quantifier")
-        menubar = Menu(self.master)
         self.pack(fill=BOTH, expand=True)
-
+        menubar = Menu(self.master)
         self.master.config(menu=menubar)
         fileMenu = Menu(menubar)
         fileMenu.add_command(label="Load new model")
         fileMenu.add_command(label="Exit")
         menubar.add_cascade(label="File", menu=fileMenu)
 
-        left_frame = Frame(self, width=200)
-        right_frame = Frame(self, width=200)
+        left_frame = Frame(self)
+        right_frame = Frame(self)
 
-        # left_frame.pack(side=LEFT)
-        # right_frame.pack(side=RIGHT)
-        left_frame.grid(row=0, column=0)
-        right_frame.grid(row=0, column=1)
+        left_frame.grid(row=0, column=0, padx=10, sticky=N + S + E + W)
+        right_frame.grid(row=0, column=1, sticky=N + S + E + W)
 
-        right_frame.columnconfigure(0, weight=1, pad=5)
+        right_frame.columnconfigure(0, weight=1)
         left_frame.columnconfigure(0, weight=1)
-        # self.grid_columnconfigure(1, weight=1)
-        # self.columnconfigure(3, pad=7)
-        # self.rowconfigure(5, weight=1)
-        # self.rowconfigure(5, pad=7)
 
         lbl = Label(left_frame, text="Console:").grid(row=0, sticky=W, padx=5, pady=5)
         # lbl.grid(sticky=W, pady=4, padx=5)
 
-        self.console = Text(left_frame, state='disabled', height=20)
-        self.console.grid(row=1, rowspan=1, padx=5)  # , sticky=E + W + S + N)
+        self.console = ScrolledText(left_frame, state='disabled', height=20)
+        self.console.grid(row=1, rowspan=1)  # , sticky=E + W + S + N) , padx=5
+        # scrollb = Scrollbar(..., command=self.console.yview)
+        # self.console['yscrollcommand'] = scrollb.set
 
         self.progress_console = Text(left_frame, state='disabled', height=2)
-        self.progress_console.grid(row=2, rowspan=1,
-                                   padx=5)  # , sticky=E + W + S + N)
+        self.progress_console.grid(row=2, sticky=W, rowspan=1,
+                                   padx=0)  # , sticky=E + W + S + N)
         # Progress bar widget
         progress_lbl = Label(left_frame, text="Total progress:")
         progress_lbl.grid(row=4, sticky=W, pady=4, padx=5)
@@ -241,34 +272,73 @@ class Example(Frame):
 
         # Configure right frame
         self.load_btn = Button(right_frame, text="Load video(s)", command=self.open_video)
-        self.load_btn.grid(row=0)
-        lbl2 = Label(right_frame, text="Options:")
+        self.load_btn.grid(row=0, pady=20)
+
+        lbl2 = Label(right_frame, text="Mode:")
         lbl2.grid(row=1, pady=5)
+        self.mode_options = [
+            "All frames",
+            "Light on",
+            "Task executed"
+        ]  # etc
+
+        self.mode_selected = StringVar()
+        self.mode_combo = Combobox(right_frame,
+                                   textvariable=self.mode_selected,
+                                   values=self.mode_options,
+                                   state="readonly",
+                                   width=18)
+
+        self.mode_combo.grid(row=2, pady=5)
+        # self.mode_combo.current(2)
+        self.mode_combo.set('Select extraction mode')
+        # self.mode_combo.current().trace("w", self.get_focus_options)
+
+        self.mode_selected.trace("w", self.get_focus_options)
+
+        lbl3 = Label(right_frame, text="Focus:")
+        lbl3.grid(row=3, pady=5)
+
+        focus_options = ['Performer (Head)']
+        self.focus_mode_selected = StringVar()
+        self.focus_combo = Combobox(right_frame,
+                                    textvariable=self.focus_mode_selected,
+                                    state="readonly",
+                                    values=focus_options,
+                                    width=18,
+                                    )
+        self.focus_combo.grid(row=4, pady=5)
+        self.focus_combo.set('Select focus point')
+
+        lbl4 = Label(right_frame, text="Options:") \
+            .grid(row=5, pady=5)
+
         self.plot_video = IntVar()
-        self.plot_check = Checkbutton(right_frame, text="Plot on video", var=self.plot_video).grid(row=2, sticky=W)
-        self.only_light = IntVar(value=1)
-        self.light_check = Checkbutton(right_frame, text="Extract active task", var=self.only_light).grid(row=3,
-                                                                                                          sticky=W)
+        self.plot_check = Checkbutton(right_frame, text="Plot on video", var=self.plot_video)
+        self.plot_check.grid(row=6, sticky=W)
+        # self.only_light = IntVar(value=1)
+        # self.light_check = Checkbutton(right_frame, text="Extract active task", var=self.only_light).grid(row=7,
+        #                                                                                                   sticky=W)
         self.log = IntVar()
-        self.log_check = Checkbutton(right_frame, text="Log to file", var=self.log).grid(row=4, sticky=W)
+        self.log.set(1)
+        self.log_check = Checkbutton(right_frame, text="Log to file", var=self.log)
+        self.log_check.grid(row=7, sticky=W)
 
         self.accumulate = IntVar()
-        self.accumulate_check = Checkbutton(right_frame, text="Accumulate score", var=self.accumulate) \
-            .grid(row=5, sticky=W)
+        self.accumulate_check = Checkbutton(right_frame, text="Accumulate score", var=self.accumulate)
+        self.accumulate_check.grid(row=8, sticky=W)
 
         self.anlysis_btn = Button(right_frame, text="Start analysis", command=self.start_analysis)
-        self.anlysis_btn.grid(row=6, pady=60)
+        self.anlysis_btn.grid(row=9, pady=10)
 
-        self.log_btn = Button(right_frame, text="Plot identities", state='disabled',
+        self.plot_btn = Button(right_frame, text="Plot identities", state='disabled',
                               command=self.plot_identity_location)
-        self.log_btn.grid(row=7, pady=1)
-        #
-        # self.create_video_btn = Button(right_frame, text="Create video", state='disabled', command=self.create_video)
-        # self.create_video_btn.grid(row=6, )
+        self.plot_btn.grid(row=10, pady=1)
+
 
 def main():
     root = Tk()
-    root.geometry("750x420+300+300")
+    root.geometry("800x440+300+300")
     app = Example()
     root.mainloop()
 

@@ -1,0 +1,23 @@
+# install: conda env create -f RAQ-CPU.yaml
+# update:  conda env update -f RAQ-CPU.yaml
+
+name: RAQ-CPU
+
+dependencies:
+  - python=3.7
+  - pip
+  - pandas
+  - nb_conda
+  - tensorflow==1.13.1
+  - wxpython
+  - Shapely
+  - pip:
+      - imutils
+      - opencv-python
+      - opencv-contrib-python
+      - tqdm
+      - deeplabcut==2.2b8
+      - h5py
+      - numpy==1.16.4
+
+

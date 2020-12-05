@@ -3,16 +3,31 @@ from tqdm import trange
 import numpy as np
 
 
-def plot_angle_on_video(video_path, from_point, end_point_1, end_point_2, angles):
+def plot_angle_on_video(video_path,options, from_point, end_point_1, end_point_2, angles):
     # root = Tk()
     # root.withdraw()
     # root.update()
     # video_path = filedialog.askopenfilename(initialdir=sys.path[0], title='Select video to plot on')
     # root.destroy()
-    print('inside video plotter!')
+    mode = options['mode']
+    if mode == 'All frames':
+        mode = 'AF'
+    elif mode == 'Light on':
+        mode = 'LO'
+    else:
+        mode = 'TE'
+
+    focus = options['focus']
+    if focus == 'Performer (Head)':
+        focus = 'PH'
+    else:
+        focus = 'BL'
+
+
+
 
     #video_output = filedialog.asksaveasfilename(initialdir=sys.path[0], title='Save plotted video as..')
-    video_output = video_path.split('.')[0] + '_with_lines_and_angles.mp4'
+    video_output = video_path.split('.')[0] + f'_{mode}_{focus}_plotted.mp4'
     # video_output = 'with_lines.mp4'
 
     video = cv2.VideoCapture(video_path)
@@ -43,7 +58,8 @@ def plot_angle_on_video(video_path, from_point, end_point_1, end_point_2, angles
         if not grabbed:
             break
 
-        if not (np.isnan(sum(list(from_point[i].values()))) or np.isnan(sum(list(end_point_1[i].values())))):
+        if not (np.isnan(sum(list(from_point[i].values()))) or
+                np.isnan(sum(list(end_point_1[i].values())))):
         #if not np.isnan(sum(list(zip(from_point[i], end_point_2[i]).values()))):
 
             start_point = (int(from_point[i]['x']), int(from_point[i]['y']))
