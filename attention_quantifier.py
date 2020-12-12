@@ -1,15 +1,22 @@
 import time
-
-from file_handler import move_files_to_dir, delete_analysis_temp_files
-from log_to_file import log_to_file
+from file_handler import move_files_to_dir, delete_analysis_temp_files, log_to_file
+from ma_dlc_controller import analyze_videos
 from plot_angle_on_video import plot_angle_on_video
 from process_angle import get_angles, calculate_score
 from read_tracklets import read_tracklets
-from ma_dlc_controller import analyze_videos
 from video_preprocessing import video_preprocess
 
 
 def start_pipeline(video_paths, crop_ratio, max_y_observer, options, gui_handler):
+    """
+    This function starts the whole analysis pipeline and takes inn the analysis parameters from GUI
+
+    :param video_paths:
+    :param crop_ratio: Crop ratio
+    :param max_y_observer: Maximum y value for finding the right identity in pose estimation
+    :param options: Selected options from the GUI
+    :param gui_handler: A copy of the GUI class to be able to print to the GUI console
+    """
     number_of_points = 0
     number_of_videos = len(video_paths)
     angles = []
@@ -18,23 +25,9 @@ def start_pipeline(video_paths, crop_ratio, max_y_observer, options, gui_handler
     performer = []
     result_txt = []
 
-
-
-    # x.join()
-    # gui_handler.update_console('\nCropping and confining .. ')
-
-    # import time
-    # for i in range(1000):
-    #     gui_handler.update_console('\nsleeping .. ')
-    #     print('sleeping 2.4 sec')
-    #     time.sleep(2.4)
-
-    # crop_ratio, max_y_observer = crop_and_confine(video_path)
-    # crop_ratio = (0,0,640,480)
-    # max_y_observer= 0
     for video_path in video_paths:
 
-        gui_handler.set_progress(1/number_of_videos * 10)
+        gui_handler.set_progress(1 / number_of_videos * 10)
         # Pre-processing video and get coordinates for ball with light
         gui_handler.update_console('\nStarting video preprocessing .. ')
         ball_location, preprocessed_video_path = video_preprocess(video_path,
@@ -42,22 +35,12 @@ def start_pipeline(video_paths, crop_ratio, max_y_observer, options, gui_handler
                                                                   gui_handler,
                                                                   options)
         gui_handler.update_console('Done! ')
-        # gui_handler.set_progress(40)
 
-        # gui_handler.run_stdout_capture(True)
-
-        #
-        # # Analyze video with maDLC
-        # Tk().withdraw()
-        # #config_file_path = filedialog.askopenfilename(initialdir=sys.path[0], title='Select DLC config file:')
         config_file_path = 'data/config.yaml'
-        # preprocessed_video_path = 'ObsLear_DudleyPriam_3_preprocessed.mp4'
         gui_handler.update_console('\nAnalysing the preprocessed video .. ')
         scorername = analyze_videos(config_file_path, preprocessed_video_path)
         gui_handler.update_console('Done!')
         gui_handler.set_progress(80)
-
-        # scorername = ''
 
         # Reading the tracklet
         gui_handler.update_console('\nReading the tracklets ..')
@@ -70,7 +53,6 @@ def start_pipeline(video_paths, crop_ratio, max_y_observer, options, gui_handler
 
         gui_handler.update_console('\nGetting the angles ...')
         # Calculate the angles between the two vectors [from_point, end_point_1] and [from_point, end_point_2]
-        # gui_handler.run_stdout_capture(True)
         if options['focus'] == 'Ball with light':
             angles = get_angles(from_point=observer[-1].eyes,
                                 end_point_1=observer[-1].snout,
@@ -98,14 +80,9 @@ def start_pipeline(video_paths, crop_ratio, max_y_observer, options, gui_handler
                           f'\nbinocular110 score: {results[2]}' +
                           f'\nbinocular176 score: {results[3]}' +
                           f'\nNumber of uncalculated angles: {results[4]}/ {to_index - from_index}' +
-                          f'\nPercentage of uncalculated angles: {(results[4] / (to_index - from_index)) * 100 }\n')
-
+                          f'\nPercentage of uncalculated angles: {(results[4] / (to_index - from_index)) * 100}\n')
 
         gui_handler.update_console(result_txt[-1], True)
-
-        # if options['log']:
-        #     gui_handler.update_console('\nlogging results to results.txt')
-        #     log_to_file(results, video_path)
 
         if options['plot']:
             gui_handler.update_console('\nPlotting lines and angles on video')
@@ -126,8 +103,6 @@ def start_pipeline(video_paths, crop_ratio, max_y_observer, options, gui_handler
             move_files_to_dir(preprocessed_video_path)
 
         delete_analysis_temp_files(preprocessed_video_path)
-
-
         counter += 1
 
     if options['accumulate']:
@@ -150,16 +125,12 @@ def start_pipeline(video_paths, crop_ratio, max_y_observer, options, gui_handler
         gui_handler.update_console('\nlogging results to results.txt')
         log_to_file(result_txt)
 
-    # gui_handler.run_stdout_capture(False)
-    # gui_handler.update_console('Done!')
-
     res = Results(observer, performer, angles, results, preprocessed_video_path)
     gui_handler.results = res
 
     gui_handler.update_console('\n\nPipeline finished!')
     gui_handler.set_progress(100)
     gui_handler.enable_buttons()
-    # gui_handler.progress.stop()
 
     time.sleep(5)
 

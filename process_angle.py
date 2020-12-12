@@ -2,9 +2,17 @@ import numpy as np
 
 
 def get_angles(from_point, end_point_1, end_point_2, angles):
+    """Takes in three points and creates a two vectors and
+    calculates the angle between the two vectors.
+
+    :param from_point: From point
+    :param end_point_1: First destination point
+    :param end_point_2: Second destination point
+    :param angles: Takes in the previous angles (in case of multi-video analysis)
+    :return: Returns the calculated angles
+    """
 
     for frame in range(len(from_point)):
-        # print(frame, from_point[frame], end_point_1[frame], end_point_2[frame])
         if not (np.isnan(sum(list(from_point[frame].values()))) or
                 np.isnan(sum(list(end_point_1[frame].values()))) or
                 np.isnan(sum(list(end_point_2[frame].values())))):
@@ -23,10 +31,19 @@ def get_angles(from_point, end_point_1, end_point_2, angles):
         else:
             angles.append(np.nan)
 
-    return angles #, results
+    return angles
 
 
 def calculate_score(angles, from_index, to_index):
+    """Takes in the angles and set the attention score according to the rats vision field.
+
+    :param angles: Takes in the angles
+    :param from_index: From index (in case of multi-video analysis)
+    :param to_index:  To index (in case of multi-video analysis)
+    :return: Returns the attention scores
+
+    """
+
     binocular_40 = 0
     binocular_110 = 0
     binocular_176 = 0
@@ -45,10 +62,6 @@ def calculate_score(angles, from_index, to_index):
     binocular_176 = binocular_176 / (to_index - from_index - uncalculated_angles)
     total_average = np.nanmean(angles[from_index:to_index - 1])
 
-    # print(f'Total average angle: {total_average}')
-    # print(f'binocular40 score: {binocular_40}')
-    # print(f'binocular110 score: {binocular_110}')
-    # print(f'binocular176 score: {binocular_176}')
     results = [total_average, binocular_40, binocular_110, binocular_176, uncalculated_angles]
 
     return results

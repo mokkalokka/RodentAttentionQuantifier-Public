@@ -1,10 +1,12 @@
-from tkinter import *
-from tkinter import filedialog
-import pandas as pd
 import numpy as np
 
 
 class Rodent:
+    """A class for containing the position of all the points for a given rodent
+
+    :param data: pandas dataframe for the given rodent
+    """
+
     def __init__(self, data):
         df = data['snout']
         df.drop('likelihood', inplace=True, axis=1)
@@ -40,10 +42,14 @@ class Rodent:
                                                     self.tail_base],
                                                    ignore_nans=True)
 
-
         self.number_of_frames = len(self.snout)
 
     def get_all_points_from_frame(self, frame):
+        """Gets all the points from the current frame of the video
+
+        :param frame: frame number
+        :return: Returns all the points as a dictionary
+        """
         return {'snout': self.snout[frame],
                 'left_ear': self.left_ear[frame],
                 'right_ear': self.right_ear[frame],
@@ -54,6 +60,11 @@ class Rodent:
                 'center_of_points': self.center_of_points[frame]}
 
     def set_all_points_for_frame(self, frame, points):
+        """Sets all the points for the selected frame from a dictionary of points
+
+        :param frame: Frame number
+        :param points: Dictionary of points
+        """
         self.snout[frame] = points['snout']
         self.left_ear[frame] = points['left_ear']
         self.right_ear[frame] = points['right_ear']
@@ -65,6 +76,12 @@ class Rodent:
 
 
 def calculate_centroid(list_of_points, ignore_nans):
+    """Takes in 2 or more points and calculates the centroid point. This is used for calculating the eyes by inputing the [left_ear, right_ear, snout]
+
+    :param list_of_points: A list of points
+    :param ignore_nans: A option to ignore nan values in case of missing points
+    :return: Returns the centroid point
+    """
     centroid = []
     number_of_points = len(list_of_points)
     number_of_frames = len(list_of_points[0])
@@ -96,20 +113,3 @@ def calculate_centroid(list_of_points, ignore_nans):
         centroid.append({'x': x_avg, 'y': y_avg})
 
     return centroid
-
-
-# Tk().withdraw()
-# filename = filedialog.askopenfilename(initialdir=sys.path[0], title='Select trackelt .h5 file:')
-#
-# df = pd.read_hdf(filename)
-# df = df['DLC_resnet50_multi_2Oct19shuffle1_200000']
-#
-# observer_df = df['observer']
-#
-#
-# observer = Rodent(observer_df)
-#
-# print(observer.center_of_points[0])
-
-
-
