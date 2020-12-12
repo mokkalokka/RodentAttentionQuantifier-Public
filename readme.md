@@ -6,6 +6,10 @@
 
 See RAQ-CPU.yaml (for cpu) or RAQ-GPU.yaml (for gpu)
 
+## Open code documentation:
+
+open docs/index.html
+
 ## Installation for CPU only:
 
 * Install miniconda 64-bit version
