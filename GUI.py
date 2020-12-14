@@ -225,12 +225,12 @@ class GUI(Frame):
         """
         self.master.title("Rodent Attention Quantifier")
         self.pack(fill=BOTH, expand=True)
-        menubar = Menu(self.master)
-        self.master.config(menu=menubar)
-        fileMenu = Menu(menubar)
-        fileMenu.add_command(label="Load new model")
-        fileMenu.add_command(label="Exit")
-        menubar.add_cascade(label="File", menu=fileMenu)
+        # menubar = Menu(self.master)
+        # self.master.config(menu=menubar)
+        # fileMenu = Menu(menubar)
+        # fileMenu.add_command(label="Load new model")
+        # fileMenu.add_command(label="Exit")
+        # menubar.add_cascade(label="File", menu=fileMenu)
 
         left_frame = Frame(self)
         right_frame = Frame(self)
@@ -244,11 +244,11 @@ class GUI(Frame):
         lbl = Label(left_frame, text="Console:").grid(row=0, sticky=W, padx=5, pady=5)
 
         self.console = ScrolledText(left_frame, state='disabled', height=20)
-        self.console.grid(row=1, rowspan=1)  # , sticky=E + W + S + N) , padx=5
+        self.console.grid(row=1, rowspan=1)
 
         self.progress_console = Text(left_frame, state='disabled', height=2)
         self.progress_console.grid(row=2, sticky=W, rowspan=1,
-                                   padx=0)  # , sticky=E + W + S + N)
+                                   padx=0)
 
         progress_lbl = Label(left_frame, text="Total progress:")
         progress_lbl.grid(row=4, sticky=W, pady=4, padx=5)
@@ -257,7 +257,32 @@ class GUI(Frame):
         self.progress.grid(row=5,
                            padx=5, sticky=E + W + S + N)
 
-        hbtn = Button(left_frame, text="Help", command=lambda: self.update_console('Helpful text \n', clear=True))
+        help_txt = 'Welcome to Rodent Attention Quantifier!\n\n' \
+                   'To start an analysis select one or more videos with the Load Video(s) button.\n' \
+                   'Then select extraction mode: \n' \
+                   'All Frames (Every frame in the video)\n' \
+                   'Light On (Only extract frames when experiment light is turned on)\n' \
+                   'Task executed (Only when the light is on and the light is pushed)\n' \
+                   'After selecting mode please chose the focus point where the\n' \
+                   'attention is calculated towards.\n\n' \
+                   'Other options:\n' \
+                   'Plot on video: This plots the calculated angles and the vectors from which the \n' \
+                   'angles are calculated from.\n' \
+                   'Log to file: logs the results to the file /data/results.txt.\n' \
+                   'Accumulate score: This accumulates all the videos selected when analysing more\n' \
+                   'than one video.\n\n' \
+                   'When all the settings are set you can start the analysis by pressing\n' \
+                   'Start analysis button.\n' \
+                   'When analysis is starting you will first be asked to select the crop ratio. \n' \
+                   'This is done by selecting a rectangle around the area of interest.\n' \
+                   'After this you must select the area where the observer is confined to.\n' \
+                   'Press enter once or twice to continue\n' \
+                   'Plot identities can be used to check the location of the calculated identities.\n\n\n' \
+                   'If you want to replace the existing pre-trained DeepLabCut model\n' \
+                   'you can replace the content in the model folder with your DeepLabCut\n' \
+                   'model of choice.'
+
+        hbtn = Button(left_frame, text="Help", command=lambda: self.update_console(help_txt, clear=True))
         hbtn.grid(row=6, padx=5)
 
         # Configure right frame

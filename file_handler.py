@@ -8,7 +8,7 @@ def move_files_to_dir(videofile_path):
 
     :param videofile_path: Takes inn the video path
     """
-    my_dir = sys.path[0] + '/data/'
+    my_dir = sys.path[0] + '/results/'
     current_dir = videofile_path.rsplit('/', 1)[0] + '/'
 
     video_identifier = (videofile_path.split('/')[-1]).split('.mp4')[0]
@@ -42,7 +42,7 @@ def log_to_file(result_txt):
     """
     now = datetime.now()
     # open a file to append
-    outF = open("data/results.txt", "a")
+    outF = open("results/results.txt", "a")
     outF.write('\nNew analysis:' + "\n")
     outF.write(now.strftime("%d/%m/%Y %H:%M:%S") + "\n")
 

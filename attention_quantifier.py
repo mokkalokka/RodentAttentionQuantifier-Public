@@ -36,7 +36,7 @@ def start_pipeline(video_paths, crop_ratio, max_y_observer, options, gui_handler
                                                                   options)
         gui_handler.update_console('Done! ')
 
-        config_file_path = 'data/config.yaml'
+        config_file_path = 'model/config.yaml'
         gui_handler.update_console('\nAnalysing the preprocessed video .. ')
         scorername = analyze_videos(config_file_path, preprocessed_video_path)
         gui_handler.update_console('Done!')
