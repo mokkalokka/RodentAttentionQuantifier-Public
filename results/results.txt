@@ -1,0 +1,56 @@
+
+New analysis:
+14/12/2020 15:39:49
+
+Attention results for trimmed.mp4:
+Mode: All frames
+Focus: Performer (Head) 
+
+Total average angle: 122.45837814591252
+binocular40 score: 0.03772241992882562
+binocular110 score: 0.06476868327402135
+binocular176 score: 0.17295373665480426
+Number of uncalculated angles: 94/ 1499
+Percentage of uncalculated angles: 6.270847231487658
+
+New analysis:
+14/12/2020 15:52:26
+
+Attention results for trimmed.mp4:
+Mode: All frames
+Focus: Performer (Head) 
+
+Total average angle: 79.21917245953301
+binocular40 score: 0.14297124600638977
+binocular110 score: 0.2563897763578275
+binocular176 score: 0.20287539936102236
+Number of uncalculated angles: 247/ 1499
+Percentage of uncalculated angles: 16.47765176784523
+
+New analysis:
+14/12/2020 16:19:47
+
+Attention results for trimmed.mp4:
+Mode: Task executed
+Focus: Ball with light 
+
+Total average angle: 58.28434285134214
+binocular40 score: 0.075
+binocular110 score: 0.475
+binocular176 score: 0.1
+Number of uncalculated angles: 0/ 40
+Percentage of uncalculated angles: 0.0
+
+New analysis:
+14/12/2020 16:23:55
+
+Attention results for trimmed.mp4:
+Mode: Task executed
+Focus: Ball with light 
+
+Total average angle: 58.648886882794564
+binocular40 score: 0.05
+binocular110 score: 0.525
+binocular176 score: 0.025
+Number of uncalculated angles: 0/ 40
+Percentage of uncalculated angles: 0.0
