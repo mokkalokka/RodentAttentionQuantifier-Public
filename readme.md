@@ -7,9 +7,9 @@ The tool simplifies and automates attention quantification of two rats used in a
 All video manipulation is done trough OpenCV, GUI is made with Tkinter and the data is structured with Pandas. The pose tracking of the rodents are done trough DeepLabCut and utilizes a pre trained model for inference (not included in the public version). 
 
 
-# Rodent attention quantifier for analysis of rodent behaviour.
+# Preview
 
-* Currently only tested with rats
+<img src="readme_images/preview.png" width="100%">
 
 ## Depentencies:
 
