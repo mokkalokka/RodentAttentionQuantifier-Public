@@ -1,3 +1,12 @@
+# Rodent Attention Quantifier (RAQ)
+
+RAQ is a tool written by me for a neuroscience research institute at NTNU in Trondheim, Norway.
+
+The tool simplifies and automates attention quantification of two rats used in a behavioral study. The tool can process one or more videos and uses head angles towards a subject as a proxy for attention. The analysis is operated trough an intuitive GUI, and allows the user to quickly analyse the experiment sessions with minimal user input and outputs an attention score. 
+
+All video manipulation is done trough OpenCV, GUI is made with Tkinter and the data is structured with Pandas. The pose tracking of the rodents are done trough DeepLabCut and utilizes a pre trained model for inference (not included in the public version). 
+
+
 # Rodent attention quantifier for analysis of rodent behaviour.
 
 * Currently only tested with rats
